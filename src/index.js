@@ -5,6 +5,7 @@ import moment from 'moment'
 import twilio from 'twilio'
 
 // setup twilio credentials and client
+const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 const accountSid = process.env.TWILIO_ACCOUNT_SID
 const authToken = process.env.TWILIO_AUTH_TOKEN
 const twilioClient = twilio(accountSid, authToken)
@@ -38,7 +39,7 @@ const sendSMS = body => {
   return twilioClient.messages.create({
       body,
       to: '+18083674380',
-      from: process.env.TWILIO_PHONE_NUMBER,
+      from: twilioPhoneNumber,
   })
 }
 
