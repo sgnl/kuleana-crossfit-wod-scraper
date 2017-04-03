@@ -51,7 +51,7 @@ got(url)
     const wodHTML = $('.workout').html()
     const wodHeader = $('#idPage h2').html()
 
-    if (!wodHTML) throw ReferenceError('no workout posted') // no workout posted? bail.
+    if (!wodHTML) throw ReferenceError('no workout posted')
     if (!wodHeader) throw ReferenceError('no header found')
 
     const html = toMarkdown(wodHTML, toMarkdownOptions)
