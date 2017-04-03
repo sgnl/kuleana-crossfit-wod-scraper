@@ -49,11 +49,13 @@ got(url)
   .then(res => {
     const $ = cheerio.load(res.body)
     const wodHTML = $('.workout').html()
+    const wodHeader = $('#idPage h2').html()
 
     if (!wodHTML) throw ReferenceError('no workout posted') // no workout posted? bail.
+    if (!!wodheader) throw ReferenceError('no header found')
 
     const html = toMarkdown(wodHTML, toMarkdownOptions)
-    const header = toMarkdown($('#idPage h2').html(), toMarkdownOptions)
+    const header = toMarkdown(wodHeader, toMarkdownOptions)
 
     return `# ${header}\n\n${html}`
   })
