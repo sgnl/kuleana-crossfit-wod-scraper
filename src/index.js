@@ -11,7 +11,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN
 const twilioClient = twilio(accountSid, authToken)
 
 const getDate = () => {
-  return moment().add(1, 'days').format('YYYY-MM-DD')
+  return moment().add(0, 'days').format('YYYY-MM-DD')
 }
 
 const toMarkdownOptions = {
@@ -52,14 +52,15 @@ got(url)
     const wodHeader = $('#idPage h2').html()
 
     if (!wodHTML) throw ReferenceError('no workout posted') // no workout posted? bail.
-    if (!!wodheader) throw ReferenceError('no header found')
+    if (!wodHeader) throw ReferenceError('no header found')
 
     const html = toMarkdown(wodHTML, toMarkdownOptions)
     const header = toMarkdown(wodHeader, toMarkdownOptions)
 
-    return `# ${header}\n\n${html}`
+    return `\n#\n# ${header}\n#\n\n${html}`
   })
-  .then(sendSMS)
+  .then(m => console.log('m: ', m))
+  // .then(sendSMS)
   .catch(err => {
     if (err.message === 'no workout posted' && err instanceof ReferenceError) {
       return console.log('really?')
