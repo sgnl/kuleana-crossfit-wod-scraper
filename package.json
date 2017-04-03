@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "babel src -d lib -w"
+    "dev": "npm run start & npm run build:js -- --watch",
+    "build:js": "babel src -d lib",
+    "start": "env $(cat .env) nodemon lib/index.js"
   },
   "keywords": [],
   "author": "Ray Farias <rayrfarias@gmail.com> (http://github.com/sgnl)",
@@ -14,10 +16,12 @@
     "cheerio": "^0.22.0",
     "got": "^6.7.1",
     "moment": "^2.18.1",
-    "to-markdown": "^3.0.4"
+    "to-markdown": "^3.0.4",
+    "twilio": "^2.11.1"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
-    "babel-preset-env": "^1.3.2"
+    "babel-preset-env": "^1.3.2",
+    "nodemon": "^1.11.0"
   }
 }
