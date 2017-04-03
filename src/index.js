@@ -59,13 +59,12 @@ got(url)
 
     return `\n#\n# ${header}\n#\n\n${html}`
   })
-  .then(m => console.log('m: ', m))
-  // .then(sendSMS)
+  .then(sendSMS)
   .catch(err => {
     if (err.message === 'no workout posted' && err instanceof ReferenceError) {
       return console.log('really?')
     }
 
-    return console.error(err);
+    return console.error(err)
   })
 
