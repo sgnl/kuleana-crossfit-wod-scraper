@@ -49,17 +49,14 @@ got(url)
     const $ = cheerio.load(res.body)
     const wodHTML = $('.workout').html()
 
-    // no workout posted? bail.
-    if (!wodHTML) throw ReferenceError('no workout posted')
+    if (!wodHTML) throw ReferenceError('no workout posted') // no workout posted? bail.
 
     const html = toMarkdown(wodHTML, toMarkdownOptions)
     const header = toMarkdown($('#idPage h2').html(), toMarkdownOptions)
 
     return `# ${header}\n\n${html}`
   })
-  // .then(markdown => console.log(markdown))
   .then(sendSMS)
-  .then(() => console.log('SMS success?!'))
   .catch(err => {
     if (err.message === 'no workout posted' && err instanceof ReferenceError) {
       return console.log('really?')
