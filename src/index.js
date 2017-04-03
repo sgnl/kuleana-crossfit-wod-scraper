@@ -11,7 +11,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN
 const twilioClient = twilio(accountSid, authToken)
 
 const getDate = () => {
-  return moment().add(0, 'days').format('YYYY-MM-DD')
+  return moment().add(1, 'days').format('YYYY-MM-DD')
 }
 
 const toMarkdownOptions = {
