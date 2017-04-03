@@ -38,7 +38,7 @@ const sendSMS = body => {
   return twilioClient.messages.create({
       body,
       to: '+18083674380',
-      from: '+18082011211',
+      from: process.env.TWILIO_PHONE_NUMBER,
   })
 }
 
@@ -52,8 +52,8 @@ got(url)
     // no workout posted? bail.
     if (!wodHTML) throw ReferenceError('no workout posted')
 
-    const html = toMarkdown(wodHTML, markdownOptions)
-    const header = toMarkdown($('#idPage h2').html(), markdownOptions)
+    const html = toMarkdown(wodHTML, toMarkdownOptions)
+    const header = toMarkdown($('#idPage h2').html(), toMarkdownOptions)
 
     return `# ${header}\n\n${html}`
   })
