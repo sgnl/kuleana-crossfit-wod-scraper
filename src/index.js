@@ -4,6 +4,7 @@ import toMarkdown from 'to-markdown'
 import moment from 'moment'
 import twilio from 'twilio'
 
+// setup twilio credentials and client
 const accountSid = process.env.TWILIO_ACCOUNT_SID
 const authToken = process.env.TWILIO_AUTH_TOKEN
 const twilioClient = twilio(accountSid, authToken)
@@ -12,10 +13,10 @@ const getDate = () => {
   return moment().add(1, 'days').format('YYYY-MM-DD')
 }
 
-const markdownOptions = {
+const toMarkdownOptions = {
   converters: [
     {
-      // 'div.skillName'
+      // only care about 'div.skillName'
       filter: node => {
         return node.classList.contains('skillName')
       },
@@ -24,6 +25,7 @@ const markdownOptions = {
       }
     },
     {
+      // catch all the rest
       filter: ['a', 'div'],
       replacement: content => {
         return content
@@ -40,15 +42,29 @@ const sendSMS = body => {
   })
 }
 
-got(`https://crossfitk.sites.zenplanner.com/leaderboard-day.cfm?date=${getDate()}`)
+const url = `https://crossfitk.sites.zenplanner.com/leaderboard-day.cfm?date=${getDate()}`
+
+got(url)
   .then(res => {
     const $ = cheerio.load(res.body)
-    const html = toMarkdown($('.workout').html(), markdownOptions)
+    const wodHTML = $('.workout').html()
+
+    // no workout posted? bail.
+    if (!wodHTML) throw ReferenceError('no workout posted')
+
+    const html = toMarkdown(wodHTML, markdownOptions)
     const header = toMarkdown($('#idPage h2').html(), markdownOptions)
+
     return `# ${header}\n\n${html}`
   })
-  .then(markdown => console.log(markdown))
-  // .then(sendSMS)
+  // .then(markdown => console.log(markdown))
+  .then(sendSMS)
   .then(() => console.log('SMS success?!'))
-  .catch(err => console.error)
+  .catch(err => {
+    if (err.message === 'no workout posted' && err instanceof ReferenceError) {
+      return console.log('really?')
+    }
+
+    return console.error(err);
+  })
 
