@@ -13,7 +13,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN
 const twilioClient = twilio(accountSid, authToken)
 
 const getDate = () => {
-  return moment().add(1, 'days').format('YYYY-MM-DD')
+  return moment().add(0, 'days').format('YYYY-MM-DD')
 }
 
 const toMarkdownOptions = {
@@ -38,11 +38,8 @@ const toMarkdownOptions = {
 }
 
 const sendSMS = ({ smsBody, phoneNumber }) => {
-  console.log('sending SMS to: ', phoneNumber);
-  console.log('with msg: ', smsBody);
   return twilioClient.messages.create({
-      smsBody,
-      // to: '+18083674380',
+      body: smsBody,
       to: `+${phoneNumber}`,
       from: twilioPhoneNumber,
   })
