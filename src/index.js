@@ -4,6 +4,8 @@ import toMarkdown from 'to-markdown'
 import moment from 'moment'
 import twilio from 'twilio'
 
+import { getAllSubscribers } from './mongo'
+
 // setup twilio credentials and client
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 const accountSid = process.env.TWILIO_ACCOUNT_SID
@@ -35,15 +37,20 @@ const toMarkdownOptions = {
   ]
 }
 
-const sendSMS = body => {
+const sendSMS = ({ smsBody, phoneNumber }) => {
+  console.log('sending SMS to: ', phoneNumber);
+  console.log('with msg: ', smsBody);
   return twilioClient.messages.create({
-      body,
-      to: '+18083674380',
+      smsBody,
+      // to: '+18083674380',
+      to: `+${phoneNumber}`,
       from: twilioPhoneNumber,
   })
 }
 
 const url = `https://crossfitk.sites.zenplanner.com/leaderboard-day.cfm?date=${getDate()}`
+
+console.log(url)
 
 got(url)
   .then(res => {
@@ -57,9 +64,14 @@ got(url)
     const html = toMarkdown(wodHTML, toMarkdownOptions)
     const header = toMarkdown(wodHeader, toMarkdownOptions)
 
-    return `\n#\n# ${header}\n#\n\n${html}`
+    return `# ${header}\n---\n\n${html}`
   })
-  .then(sendSMS)
+  .then(smsBody => {
+    return getAllSubscribers()
+      .then(subs => subs.forEach(({ phoneNumber }) => {
+        return sendSMS({ smsBody, phoneNumber})
+      }))
+  })
   .catch(err => {
     if (err.message === 'no workout posted' && err instanceof ReferenceError) {
       return console.log('really?')
@@ -67,4 +79,3 @@ got(url)
 
     return console.error(err)
   })
-
