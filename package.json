@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npm run start & npm run build:js -- --watch",
     "build:js": "babel src -d lib",
-    "start": "env $(cat .env) nodemon lib/index.js"
+    "start": "env $(cat .env) node lib/index.js"
   },
   "keywords": [],
   "author": "Ray Farias <rayrfarias@gmail.com> (http://github.com/sgnl)",

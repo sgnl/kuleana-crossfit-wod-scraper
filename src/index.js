@@ -7,13 +7,13 @@ import twilio from 'twilio'
 import { getAllSubscribers } from './mongo'
 
 // setup twilio credentials and client
-const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER
 const accountSid = process.env.TWILIO_ACCOUNT_SID
 const authToken = process.env.TWILIO_AUTH_TOKEN
 const twilioClient = twilio(accountSid, authToken)
 
 const getDate = () => {
-  return moment().add(0, 'days').format('YYYY-MM-DD')
+  return moment().add(1, 'days').format('YYYY-MM-DD')
 }
 
 const toMarkdownOptions = {
@@ -37,12 +37,12 @@ const toMarkdownOptions = {
   ]
 }
 
-const sendSMS = ({ smsBody, phoneNumber }) => {
+const sendSMS = ({ smsBody, phoneNumber }, cb) => {
   return twilioClient.messages.create({
-      body: smsBody,
-      to: `+${phoneNumber}`,
-      from: twilioPhoneNumber,
-  })
+    body: smsBody,
+    to: `+${phoneNumber}`,
+    from: twilioPhoneNumber,
+  }, cb)
 }
 
 const url = `https://crossfitk.sites.zenplanner.com/leaderboard-day.cfm?date=${getDate()}`
@@ -66,7 +66,10 @@ got(url)
   .then(smsBody => {
     return getAllSubscribers()
       .then(subs => subs.forEach(({ phoneNumber }) => {
-        return sendSMS({ smsBody, phoneNumber})
+        return sendSMS({ smsBody, phoneNumber}, (err, text) => {
+          console.log('sms sent!')
+          process.exit()
+        })
       }))
   })
   .catch(err => {
