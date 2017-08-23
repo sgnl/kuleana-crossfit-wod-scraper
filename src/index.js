@@ -12,9 +12,7 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID
 const authToken = process.env.TWILIO_AUTH_TOKEN
 const twilioClient = twilio(accountSid, authToken)
 
-const getDate = () => {
-  return moment().add(1, 'days').format('YYYY-MM-DD')
-}
+const date = moment().add(1, 'days').format('YYYY-MM-DD')
 
 const toMarkdownOptions = {
   converters: [
@@ -45,11 +43,21 @@ const sendSMS = ({ smsBody, phoneNumber }, cb) => {
   }, cb)
 }
 
-const url = `https://crossfitk.sites.zenplanner.com/leaderboard-day.cfm?date=${getDate()}`
+const baseUrl = `https://crossfitk.sites.zenplanner.com/leaderboard-day.cfm?date=${date}`
+const actualUrl = (programId) => `https://crossfitk.sites.zenplanner.com/leaderboard-day.cfm?programid=${programId}&date=${date}`;
 
-console.log(url)
+got(baseUrl)
+  .then(res => {
+    const $ = cheerio.load(res.body)
+    const optionElements = $('#objectid option')
 
-got(url)
+    const allLevelsSelectable = optionElements.filter((_, element) => {
+      return element.children.some(html => /All Levels/gmi.test(html.data))
+    });
+
+    return actualUrl(allLevelsSelectable[0].attribs.value)
+  })
+  .then(got)
   .then(res => {
     const $ = cheerio.load(res.body)
     const wodHTML = $('.workout').html()
